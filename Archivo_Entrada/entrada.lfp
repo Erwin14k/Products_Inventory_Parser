@@ -1,0 +1,76 @@
+'''
+COMENTARIO
+MULTILINEA
+DE
+PRUBEA
+'''
+
+Claves = [
+	#aqui empiezan las claves
+'''
+BUENO
+PUES
+'''
+	"codigo", "producto", "precio_compra",
+ 	"precio_venta", "stock"
+	#aqui terminan las claves
+	'''
+	BUENO
+	PUESX2
+	'''
+]
+'''
+HOLA UN COMENTARIO
+MULTILINEA 
+JAJAJA
+'''
+
+#ya casi a registros
+
+Registros = [
+	#aqui empiezan los registros
+	{1, "Barbacoa", 10.50, 20.00, 6}
+	{2, "Salsa", 13.00, 16.00, 7}
+	#en medio de registros
+	{3, "Mayonesa", 15.00, 18.00, 7}
+	'''
+	jaja
+	jaja
+	'''
+	{4, "Mostaza", 14.00, 16.00, 6}
+'''
+Este comentario
+es un poco
+mas largo
+'''
+]
+#aqui terminan los registros
+
+
+#Un comentario corto
+#PROYECTO #2 LFP
+'''
+Este comentario
+es un poco
+mas largo
+'''
+
+imprimir("reporte de ");
+imprimir("Abarroteria");
+
+#Un comentario corto
+imprimirln("reporte de");
+imprimirln("Abarroteria");
+conteo();
+
+#Un comentario corto
+promedio("stock");
+contarsi("stock",6);
+contarsi("stock",7);
+contarsi("stock",8);
+datos();
+max("precio_venta");
+min("precio_compra");
+sumar("stock");
+
+exportarReporte("reporte HTML de Abarroteria");

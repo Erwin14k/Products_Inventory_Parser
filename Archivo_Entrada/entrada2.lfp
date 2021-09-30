@@ -1,0 +1,35 @@
+Claves = [
+	"portero", "rating", "nacionalidad"
+]
+
+Registros = [
+	{"Ter_Stegen", 99, "Alemania"}
+	{"Keylor_Navas", 88, "Costa_Rica"}
+	{"Claudio_Bravo", 79, "Chile"}
+	{"Dibu_Martinez", 96, "Argentina"}
+	{"Armani", 79, "Argentina"}
+]
+
+
+#Un comentario corto
+
+'''
+Este comentario
+es un poco
+mas largo
+'''
+
+imprimir("Reporte de ");
+imprimir("Porteros");
+imprimirln("Reporte de");
+imprimirln("Porteros");
+conteo();
+promedio("rating");
+contarsi("rating",99);
+contarsi("rating",79);
+contarsi("rating",96);
+datos();
+max("rating");
+min("rating");
+
+exportarReporte("Reporte HTML de Porteros");
