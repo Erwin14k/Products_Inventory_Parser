@@ -31,5 +31,6 @@ contarsi("rating",96);
 datos();
 max("rating");
 min("rating");
+sumar("rating");
 
 exportarReporte("Reporte HTML de Porteros");

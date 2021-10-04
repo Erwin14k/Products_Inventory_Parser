@@ -160,7 +160,8 @@ upload_Button.config(command=upload_file)
 #Función para analizar el archivo "lfp", dónde se recolectan tokens, además, errores léxicos y sintácticos.
 
 def analyze_file():
-    lexical_analyzer_handler.lexical_analyze_file(original_text)
+    global editable_text
+    lexical_analyzer_handler.lexical_analyze_file(editable_text.get("1.0",'end-1c'))
     #lexical_analyzer_handler.print_tokens()
     #lexical_analyzer_handler.print_errors()
     #register_handler.print_registers()
