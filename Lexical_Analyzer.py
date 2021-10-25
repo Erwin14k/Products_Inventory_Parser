@@ -29,7 +29,7 @@ class Lexical_Analyzer:
         print_buffer=""
         println_buffer=""
         data_buffer=""
-        sentinel = '%'
+        sentinel = '$'
         count_buffer=""
         average_buffer=""
         max_buffer=""
@@ -48,6 +48,10 @@ class Lexical_Analyzer:
             #Estado 0, donde dependiendo lo recolectado ira cambiando de estado
             if state == 0:
                 if c == sentinel:
+                    buffer+=c
+                    token_handler.new_token(buffer, 'EOF', line, column)
+                    column+=1
+                    buffer=""
                     print('Se aceptó la cadena!')
                     break
                 #Si encuentra una letra "C", se irá al estado 1
@@ -104,6 +108,16 @@ class Lexical_Analyzer:
                     buffer+=c
                     column+=1
                     state=34
+                elif c==";":
+                    buffer+=c
+                    token_handler.new_token(buffer, 'semicolon', line, column)
+                    column+=1
+                    buffer=""
+                elif c==")":
+                    buffer+=c
+                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
+                    column+=1
+                    buffer=""
                 else:
                     buffer += c
                     error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
@@ -260,13 +274,15 @@ class Lexical_Analyzer:
                     column += 1
                 else:
                     if buffer == 'Registros':
-                        token_handler.new_token(buffer, 'Registros', line, column)
+                        #print("si vienen registros")
+                        token_handler.new_token(buffer, 'Register', line, column)
+                        buffer = ""
+                        state = 6
                     else:
                         error_handler.new_error('Palabra ' + "'"+buffer +"'"+ ' no reconocido en el lenguaje.'
                     , 'Léxico', line, column)
-                    buffer = ""
-                    i -= 1
-                    state = 6
+                        state = 0
+                    
             #=======================================================================================
 
 
@@ -274,8 +290,6 @@ class Lexical_Analyzer:
             #Estado 6, donde solo acepta "=" , " " , "["
             elif state == 6:
                 if c==" ":
-                    buffer += c
-                    buffer =""
                     column += 1
                 elif c=="=":
                     buffer+=c
@@ -355,7 +369,6 @@ class Lexical_Analyzer:
                 elif c=="\n":
                     line+=1
                     column=1
-                    state=7
                 elif c==" " or c=="\t":
                     column+=1
                 elif c=="}":
@@ -364,6 +377,7 @@ class Lexical_Analyzer:
                     register_handler.new_register(self.temporal_register)
                     buffer=""
                     self.temporal_register=[]
+                    state=7
                 elif c.isdigit():
                     column+=1
                     buffer+=c
@@ -381,7 +395,7 @@ class Lexical_Analyzer:
             #=======================================================================================
             #Estado 9, acepta atributo de un registro de tipo string
             elif state==9:
-                if re.search('[a-z]', c) or re.search('[A-Z]', c) or c=="_":
+                if c!='"' and c!='\n' and c!="\t":
                     buffer += c
                     column += 1
                 elif c=='"':
@@ -393,12 +407,11 @@ class Lexical_Analyzer:
                     column+=1
                     buffer=""
                     state=8
-                else:
-                    buffer += c
-                    error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
-                    , 'Léxico', line, column)
-                    buffer = ''
-                    column += 1
+                elif c=="\n":
+                    line+=1
+                    column=1
+                elif  c=="\t":
+                    column+=1
             #=======================================================================================
 
 
@@ -408,38 +421,37 @@ class Lexical_Analyzer:
                 if c.isdigit():
                     buffer += c
                     column += 1
+                elif c==".":
+                    buffer += c
+                    column+=1
+                    state=11
+                elif c=="," or c==" " :
+                    self.temporal_register=[*self.temporal_register,int(buffer)]
+                    token_handler.new_token(buffer,"int_value",line,column)
+                    buffer=""
+                    column+=1
+                    buffer+=c
+                    token_handler.new_token(buffer,"comma",line,column)
+                    buffer=""
+                    state=8
+                elif c=="}":
+                    self.temporal_register=[*self.temporal_register,int(buffer)]
+                    token_handler.new_token(buffer,"int_value",line,column)
+                    buffer=""
+                    column+=1
+                    buffer+=c
+                    token_handler.new_token(buffer,"closed_key",line,column)
+                    buffer=""
+                    column+=1
+                    register_handler.new_register(self.temporal_register)
+                    print(self.temporal_register)
+                    self.temporal_register=[]
+                    state=7
                 else:
-                    if c==".":
-                        buffer += c
-                        column+=1
-                        state=11
-                    else:
-                        if c=="," or c==" " :
-                            self.temporal_register=[*self.temporal_register,int(buffer)]
-                            token_handler.new_token(buffer,"int_value",line,column)
-                            buffer=""
-                            column+=1
-                            buffer+=c
-                            token_handler.new_token(buffer,"comma",line,column)
-                            buffer=""
-                            state=8
-                        elif c=="}":
-                            self.temporal_register=[*self.temporal_register,int(buffer)]
-                            token_handler.new_token(buffer,"int_value",line,column)
-                            buffer=""
-                            column+=1
-                            buffer+=c
-                            token_handler.new_token(buffer,"closed_key",line,column)
-                            buffer=""
-                            column+=1
-                            register_handler.new_register(self.temporal_register)
-                            self.temporal_register=[]
-                            state=8
-                        else:
-                            error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
-                            , 'Léxico', line, column)
-                            buffer = ''
-                            column += 1
+                    error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
+                    , 'Léxico', line, column)
+                    buffer = ''
+                    column += 1
             #=======================================================================================
 
 
@@ -469,7 +481,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    token_handler.new_token(buffer,"simple_comment",line,column)
+                    #token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -484,7 +496,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    token_handler.new_token(buffer,"simple_comment",line,column)
+                    #token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -499,7 +511,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    token_handler.new_token(buffer,"simple_comment",line,column)
+                    #token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -521,7 +533,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    token_handler.new_token(buffer,"multiple_comment",line,column)
+                    #token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -545,7 +557,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    token_handler.new_token(buffer,"multiple_comment",line,column)
+                    #token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -561,7 +573,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    token_handler.new_token(buffer,"simple_comment",line,column)
+                    #token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -586,7 +598,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    token_handler.new_token(buffer,"multiple_comment",line,column)
+                    #token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -608,7 +620,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    token_handler.new_token(buffer,"multiple_comment",line,column)
+                    #token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -658,39 +670,13 @@ class Lexical_Analyzer:
             #Estado 21, viene de recibir un imprimir, en este caso se recolecta, que se desea
             #imprimir
             elif state == 21:
-                if  c=='"' and len(buffer)==0:
+                if  c=='"' :
                     buffer+=c
                     token_handler.new_token(buffer, 'double_quotation_mark', line, column)
                     column += 1
                     print_buffer+=c
                     buffer=""
-                elif  c=='"' and len(buffer)!=0:
-                    token_handler.new_token(buffer, 'message', line, column)
-                    buffer=""
-                    buffer+=c
-                    token_handler.new_token(buffer, 'double_quotation_mark', line, column)
-                    column += 1
-                    print_buffer+=c
-                    buffer=""
-                elif re.search('[a-z]', c) or re.search('[A-Z]', c) or c.isdigit() or c==" " :
-                    print_buffer+=c
-                    buffer+=c
-                    column+=1
-                elif c==";":
-                    buffer+=c
-                    token_handler.new_token(buffer, 'semicolon', line, column)
-                    column+=1
-                    buffer=""
-                    state=0
-                elif c==")":
-                    buffer+=c
-                    column+=1
-                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
-                    buffer=""
-                    print_buffer+=c
-                    instruction_handler.new_instruction(print_buffer)
-                    print_buffer=""
-                    
+                    state=36
                 else:
                     buffer+=c
                     column+=1
@@ -698,46 +684,20 @@ class Lexical_Analyzer:
                     , 'Léxico', line, column)
                     buffer = ""
                     i -= 1
-                    state = 0
+                    #state = 0
             #=======================================================================================
 
             #=======================================================================================
             #Estado 22, viene de recibir un imprimirln, en este caso se recolecta, que se desea
             #imprimir
             elif state == 22:
-                if  c=='"' and len(buffer)==0:
+                if  c=='"' :
                     buffer+=c
                     token_handler.new_token(buffer, 'double_quotation_mark', line, column)
                     column += 1
                     println_buffer+=c
                     buffer=""
-                elif  c=='"' and len(buffer)!=0:
-                    token_handler.new_token(buffer, 'message', line, column)
-                    buffer=""
-                    buffer+=c
-                    token_handler.new_token(buffer, 'double_quotation_mark', line, column)
-                    column += 1
-                    println_buffer+=c
-                    buffer=""
-                elif re.search('[a-z]', c) or re.search('[A-Z]', c) or c.isdigit() or c==" " :
-                    println_buffer+=c
-                    buffer+=c
-                    column+=1
-                elif c==";":
-                    buffer+=c
-                    token_handler.new_token(buffer, 'semicolon', line, column)
-                    column+=1
-                    buffer=""
-                    state=0
-                elif c==")":
-                    buffer+=c
-                    column+=1
-                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
-                    buffer=""
-                    println_buffer+=c
-                    instruction_handler.new_instruction(println_buffer)
-                    println_buffer=""
-                    
+                    state=37
                 else:
                     buffer+=c
                     column+=1
@@ -745,7 +705,7 @@ class Lexical_Analyzer:
                     , 'Léxico', line, column)
                     buffer = ""
                     i -= 1
-                    state = 0
+                    #state = 0
             #=======================================================================================
 
 
@@ -1170,27 +1130,13 @@ class Lexical_Analyzer:
                     token_handler.new_token(buffer, 'comma', line, column)
                     buffer=""
                     column+=1
-                elif c.isdigit():
-                    count_if_buffer+=c
-                    buffer+=c
-                    token_handler.new_token(buffer, 'int_parameter', line, column)
-                    buffer=""
-                    column+=1
-
+                    state=38
                 elif c==";":
                     buffer+=c
                     token_handler.new_token(buffer, 'semicolon', line, column)
                     column+=1
                     buffer=""
                     state=0
-                elif c==")":
-                    buffer+=c
-                    column+=1
-                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
-                    buffer=""
-                    count_if_buffer+=c
-                    instruction_handler.new_instruction(count_if_buffer)
-                    count_if_buffer=""
                     
                 else:
                     buffer+=c
@@ -1277,6 +1223,167 @@ class Lexical_Analyzer:
                     buffer = ""
                     i -= 1
                     state = 0
+            #=======================================================================================
+
+            #=======================================================================================
+            #Estado 36, viene de recibir un '"', en este caso se recolecta, que se desea
+            #imprimir
+            elif state == 36:
+                if  c=='"':
+                    token_handler.new_token(buffer, 'message', line, column)
+                    buffer=""
+                    buffer+=c
+                    token_handler.new_token(buffer, 'double_quotation_mark', line, column)
+                    column += 1
+                    print_buffer+=c
+                    buffer=""
+                elif c==";":
+                    buffer+=c
+                    token_handler.new_token(buffer, 'semicolon', line, column)
+                    column+=1
+                    buffer=""
+                    state=0
+                elif c==")":
+                    buffer+=c
+                    column+=1
+                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
+                    buffer=""
+                    print_buffer+=c
+                    instruction_handler.new_instruction(print_buffer)
+                    print_buffer=""
+                    state=0
+                elif c=="\n":
+                    line += 1
+                    column = 1
+                elif c == '\t':
+                    column += 1
+                else:
+                    print_buffer+=c
+                    buffer+=c
+                    column+=1
+            #=======================================================================================
+
+            #=======================================================================================
+            #Estado 37, viene de recibir un '"', en este caso se recolecta, que se desea
+            #imprimirln
+            elif state == 37:
+                if  c=='"':
+                    token_handler.new_token(buffer, 'message', line, column)
+                    buffer=""
+                    buffer+=c
+                    token_handler.new_token(buffer, 'double_quotation_mark', line, column)
+                    column += 1
+                    println_buffer+=c
+                    buffer=""
+                elif c==";":
+                    buffer+=c
+                    token_handler.new_token(buffer, 'semicolon', line, column)
+                    column+=1
+                    buffer=""
+                    state=0
+                elif c==")":
+                    print(println_buffer)
+                    buffer+=c
+                    column+=1
+                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
+                    buffer=""
+                    println_buffer+=c
+                    instruction_handler.new_instruction(println_buffer)
+                    println_buffer=""
+                    state=0
+                elif c=="\n":
+                    line += 1
+                    column = 1
+                elif c == '\t':
+                    column += 1
+                else:
+                    println_buffer+=c
+                    buffer+=c
+                    column+=1
+            #=======================================================================================
+
+            #=======================================================================================
+            #Estado 38, verifica si es string el segundo parametro del contarsi
+            elif state==38:
+                if re.search('[a-z]', c) or re.search('[A-Z]', c)  or c==" " or c=="_":
+                    count_if_buffer+=c
+                    buffer+=c
+                    column+=1
+                elif c==')':
+                    token_handler.new_token(buffer, 'string_parameter', line, column)
+                    buffer=""
+                    column+=1
+                    buffer+=c
+                    token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
+                    buffer=""
+                    count_if_buffer+=c
+                    instruction_handler.new_instruction(count_if_buffer)
+                    count_if_buffer=""
+                    state=33
+                elif c.isdigit():
+                    count_if_buffer+=c
+                    buffer += c
+                    column += 1
+                    state=39
+                else:
+                    buffer+=c
+                    column+=1
+                    error_handler.new_error('caracter ' + "'"+buffer +"'"+ ' no reconocido en el lenguaje.'
+                    , 'Léxico', line, column)
+                    buffer = ""
+                    i -= 1
+            #=======================================================================================
+
+            #=======================================================================================
+            #Estado 39, verifica si es int o float el segundo parametro
+            elif state==39:
+                if c.isdigit():
+                    buffer += c
+                    count_if_buffer+=c
+                    column += 1
+                elif c==".":
+                    buffer += c
+                    column+=1
+                    state=40
+                elif c==")":
+                    token_handler.new_token(buffer,"float_parameter",line,column)
+                    buffer=""
+                    column+=1
+                    buffer+=c
+                    token_handler.new_token(buffer,"parenthesis_that_closes",line,column)
+                    buffer=""
+                    column+=1
+                    count_if_buffer+=c
+                    instruction_handler.new_instruction(count_if_buffer)
+                    count_if_buffer=""
+                    state=33
+                else:
+                    error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
+                    , 'Léxico', line, column)
+                    buffer = ''
+                    column += 1
+            #=======================================================================================
+
+            #=======================================================================================
+            #Estado 40, se recibió un punto, por lo cual se recolecta el número float
+            elif state==40:
+                if c.isdigit():
+                    buffer += c
+                    count_if_buffer+=c
+                    column += 1
+                else:
+                    if c==")":
+                        token_handler.new_token(buffer,"float_parameter",line,column)
+                        buffer=""
+                        column+=1
+                        buffer+=c
+                        token_handler.new_token(buffer,"parenthesis_that_closes",line,column)
+                        buffer=""
+                        column+=1
+                        count_if_buffer+=c
+                        instruction_handler.new_instruction(count_if_buffer)
+                        count_if_buffer=""
+                        state=33
             #=======================================================================================
             i += 1
 #========================================================================================================

@@ -9,6 +9,8 @@ import re
 import webbrowser as wb
 from Lexical_Analyzer import Lexical_Analyzer
 from Lexical_Analyzer import token_handler,error_handler,register_handler,instruction_handler
+from Parser import Parser
+parser_handler=Parser()
 lexical_analyzer_handler=Lexical_Analyzer()
 report_text=""
 
@@ -162,13 +164,14 @@ upload_Button.config(command=upload_file)
 def analyze_file():
     global editable_text
     lexical_analyzer_handler.lexical_analyze_file(editable_text.get("1.0",'end-1c'))
+    parser_handler.analyze(token_handler.tokens_list)
     #lexical_analyzer_handler.print_tokens()
     #lexical_analyzer_handler.print_errors()
     #register_handler.print_registers()
-    token_handler.tokens_html_report()
     #instruction_handler.print_instructions()
     #lexical_analyzer_handler.print_errors()
     reports_generator()
+
 analyze_Button.config(command=analyze_file)
 #============================================================================================================
 
@@ -181,6 +184,18 @@ information_Button.config(command=student_information)
 #============================================================================================================
 
 #============================================================================================================
+#Función para abrir automáticamente los reportes de tokens y de errores
+def reports_view():
+    token_handler.tokens_html_report()
+    error_handler.errors_html_report()
+    messagebox.showinfo(title="Image Maker V1.0", message="Se Abrirán Los siguientes Reportes:\n-Reporte De Tokens\n"
+    "-Reporte De errores")
+    os.system("C:/Users/Erwin14k/Documents/Products_Inventory_Parser/REPORTES/TOKENS.html")
+    os.system("C:/Users/Erwin14k/Documents/Products_Inventory_Parser/REPORTES/ERRORS.html")
+reports_Button.config(command=reports_view)
+#============================================================================================================
+
+#============================================================================================================
 #Función que termina con la ejecución de la aplicación
 def exit_application():
     exit()
@@ -190,14 +205,7 @@ exit_Button.config(command=exit_application)
 def reports_generator():
     global report_text,console_text
     report_text=""
-    total_prints=0
-    total_println=0
-    print_counter=0
-    printlm_counter=0
     temporal_text=""
-    for instruction in instruction_handler.instructions_list:
-        if instruction.what_should_I_do.count("imprimir(")>=1:
-            total_prints+=1
     for instruction in instruction_handler.instructions_list:
         if instruction.what_should_I_do.count("exportarReporte(")>=1:
             aux=""
@@ -275,6 +283,10 @@ def reports_generator():
                 report_text+="\n"
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("promedio(")>=1:
             temp_data=[]
             temp_data+=register_handler.registers_list
@@ -297,6 +309,10 @@ def reports_generator():
             report_text+=">>>"+str(avg)+"\n"
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("max(")>=1:
             temp_data=[]
             temp_data+=register_handler.registers_list
@@ -322,6 +338,10 @@ def reports_generator():
             report_text+=">>>"+str(column[0])+"\n"
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         
         elif instruction.what_should_I_do.count("min(")>=1:
             temp_data=[]
@@ -348,6 +368,10 @@ def reports_generator():
             report_text+=">>>"+str(column[0])+"\n"
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("sumar(")>=1:
             temp_data=[]
             temp_data+=register_handler.registers_list
@@ -367,8 +391,13 @@ def reports_generator():
             print("=======================================Reporte Suma==========================================")
             print("sumar: ",str(total_sum))
             report_text+=">>>"+str(total_sum)+"\n"
+            total_sum=0
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("contarsi(")>=1:
             temp_data=[]
             temp_data+=register_handler.registers_list
@@ -385,13 +414,18 @@ def reports_generator():
             column = [row[column_number] for row in temp_data]
             total_sum=0
             for j in column:
-                if j!=final_parameters[0] and j==int(final_parameters[1]):
+                if j!=final_parameters[0] and float(j)==float(final_parameters[1]):
                     total_sum +=1
             print("====================================Reporte Contarsi=========================================")
             print("contarsi: ",str(total_sum))
             report_text+=">>>"+str(total_sum)+"\n"
+            total_sum=0
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("conteo(")>=1:
             temp_data=[]
             temp_data+=register_handler.registers_list
@@ -402,20 +436,27 @@ def reports_generator():
             report_text+=">>>"+str(register_counter)+"\n"
             print("=============================================================================================")
             print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("imprimir(")>=1:
-            print_counter+=1
             aux2=""
             parameter=""
             aux2+=instruction.what_should_I_do.replace('imprimir("',"")
             aux2.replace('")',"")
             parameter+=aux2.replace('")',"")
             temporal_text+=parameter
-            if print_counter==total_prints:
-                print("============================================PRINT============================================")
-                print("imprimir en consola: ",temporal_text)
-                report_text+=">>>"+str(temporal_text)+"\n"
-                print("=============================================================================================")
-                print("\n\n")
+            print("============================================PRINT============================================")
+            print("imprimir en consola: ",temporal_text)
+            report_text+=">>>"+str(temporal_text)+"\n"
+            temporal_text=""
+            print("=============================================================================================")
+            print("\n\n")
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
         elif instruction.what_should_I_do.count("imprimirln(")>=1:
             aux2=""
             parameter=""
@@ -429,11 +470,10 @@ def reports_generator():
             report_text+=">>>"+str(text)+"\n"
             print("=============================================================================================")
             print("\n\n")
-    print("=============================================================================================")
-    print(report_text)
-    console_text.configure(state='normal')
-    console_text.insert("1.0",report_text)
-    console_text.configure(state='disabled')
+            console_text.configure(state='normal')
+            console_text.insert("end-1c",report_text)
+            console_text.configure(state='disabled')
+            report_text=""
 
                     
             

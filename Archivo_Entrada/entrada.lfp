@@ -24,12 +24,17 @@ HOLA UN COMENTARIO
 MULTILINEA 
 JAJAJA
 '''
-
+!!!!
 #ya casi a registros
 
 Registros = [
+	!!!!
 	#aqui empiezan los registros
-	{1, "Barbacoa", 10.50, 20.00, 6}
+	{1,
+ 	"Barbacoa",
+	10.50, 
+	20.00, 
+	6}
 	{2, "Salsa", 13.00, 16.00, 7}
 	#en medio de registros
 	{3, "Mayonesa", 15.00, 18.00, 7}
@@ -43,12 +48,13 @@ Este comentario
 es un poco
 mas largo
 '''
+!!!!
 ]
 #aqui terminan los registros
 
 
 #Un comentario corto
-#PROYECTO #2 LFP
+#PROYECTO #999 LFP
 '''
 Este comentario
 es un poco
@@ -67,10 +73,15 @@ conteo();
 promedio("stock");
 contarsi("stock",6);
 contarsi("stock",7);
+'''
+Este comentario
+es un poco
+mas feo
+'''
 contarsi("stock",8);
 datos();
 max("precio_venta");
 min("precio_compra");
 sumar("stock");
-
+exportarnada
 exportarReporte("reporte HTML de Abarroteria");

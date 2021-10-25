@@ -65,7 +65,7 @@ class Token_DAO:
         <th>COLUMNA</th>
         </tr>"""
         for token in self.tokens_list:
-            if token.type == 'CLAVES' or token.type == 'Clave' or token.type == 'Registros':
+            if token.type == 'CLAVES' or token.type == 'Clave' or token.type == 'Register':
                 token_html+="""
                 <tr>
                 <td bgcolor= "#39BBC4">"""+token.type+"""</td>
@@ -145,7 +145,7 @@ class Token_DAO:
                 <td bgcolor= "#3EEBA8">"""+str(token.line)+"""</td>
                 <td bgcolor= "#3EEBA8">"""+str(token.column)+"""</td>
                 </tr>"""
-            elif token.type == 'title' or token.type=="report" :
+            elif token.type == 'title' or token.type=="report" or token.type=="EOF" :
                 token_html+="""
                 <tr>
                 <td bgcolor= "#FC8D3B">"""+token.type+"""</td>
