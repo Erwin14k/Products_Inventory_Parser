@@ -444,7 +444,7 @@ class Lexical_Analyzer:
                     buffer=""
                     column+=1
                     register_handler.new_register(self.temporal_register)
-                    print(self.temporal_register)
+                    #print(self.temporal_register)
                     self.temporal_register=[]
                     state=7
                 else:
@@ -1282,7 +1282,7 @@ class Lexical_Analyzer:
                     buffer=""
                     state=0
                 elif c==")":
-                    print(println_buffer)
+                    #print(println_buffer)
                     buffer+=c
                     column+=1
                     token_handler.new_token(buffer, 'parenthesis_that_closes', line, column)
@@ -1346,7 +1346,7 @@ class Lexical_Analyzer:
                     column+=1
                     state=40
                 elif c==")":
-                    token_handler.new_token(buffer,"float_parameter",line,column)
+                    token_handler.new_token(buffer,"int_parameter",line,column)
                     buffer=""
                     column+=1
                     buffer+=c

@@ -1,6 +1,7 @@
 class Register_DAO:
     def __init__(self):
         self.registers_list = []
+        self.report_console=""
 
 
     #Función para crear nuevos Errores

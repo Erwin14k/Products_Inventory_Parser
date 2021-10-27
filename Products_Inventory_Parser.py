@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-from Token_DAO import Token_DAO
 import os
 from tkinter import *
 from tkinter.ttk import Combobox
@@ -10,9 +9,9 @@ import webbrowser as wb
 from Lexical_Analyzer import Lexical_Analyzer
 from Lexical_Analyzer import token_handler,error_handler,register_handler,instruction_handler
 from Parser import Parser
+report_text=""
 parser_handler=Parser()
 lexical_analyzer_handler=Lexical_Analyzer()
-report_text=""
 
 #============================================================================================================
 #Creación de la raíz aplicando algunos atributos
@@ -162,15 +161,18 @@ upload_Button.config(command=upload_file)
 #Función para analizar el archivo "lfp", dónde se recolectan tokens, además, errores léxicos y sintácticos.
 
 def analyze_file():
-    global editable_text
+    global editable_text,console_text
     lexical_analyzer_handler.lexical_analyze_file(editable_text.get("1.0",'end-1c'))
     parser_handler.analyze(token_handler.tokens_list)
+    console_text.configure(state='normal')
+    console_text.insert("end-1c",register_handler.report_console)
+    console_text.configure(state='disabled')
     #lexical_analyzer_handler.print_tokens()
     #lexical_analyzer_handler.print_errors()
     #register_handler.print_registers()
     #instruction_handler.print_instructions()
     #lexical_analyzer_handler.print_errors()
-    reports_generator()
+    #reports_generator()
 
 analyze_Button.config(command=analyze_file)
 #============================================================================================================
@@ -202,7 +204,12 @@ def exit_application():
 exit_Button.config(command=exit_application)
 #============================================================================================================
 
-def reports_generator():
+#============================================================================================================
+#La útlima instrucción de la raíz, ejecutará todo lo que esté arriba de este método
+root.mainloop()
+#============================================================================================================
+
+'''def reports_generator():
     global report_text,console_text
     report_text=""
     temporal_text=""
@@ -220,8 +227,8 @@ def reports_generator():
             rows=len(temp_data)
             cols=lexical_analyzer_handler.cols
             f = open('Reportes/'+archive_name+'.html','w')
-            instruction_html ='''<html>
-            <head></head>
+            instruction_html =''' '''<html>'''
+'''<head></head>
             <body bgcolor="#FFA07A">
             <FONT SIZE=7 FACE="showcard gothic" COLOR="red">E</font>
             <FONT SIZE=7 FACE="showcard gothic" COLOR="blue">r</font>
@@ -258,13 +265,13 @@ def reports_generator():
             <hr />
             <center>
             <table width="500" border="2" cellpadding="5" >
-            <caption>'''+archive_name+"""</caption>"""
+            <caption>+archive_name+/caption>"""
             for i in range(0,rows):
                 instruction_html+="""<tr>"""
                 for j in  range(0,cols):
-                    instruction_html+='''
-                    <td>'''+str(temp_data[i][j])+'''</td>'''
-                instruction_html+='''</tr>'''
+                    instruction_html+=
+                    <td>+str(temp_data[i][j])+</td>
+                instruction_html+=</tr>
             instruction_html+="""
             </table>
             </body>
@@ -474,13 +481,5 @@ def reports_generator():
             console_text.insert("end-1c",report_text)
             console_text.configure(state='disabled')
             report_text=""
-
-                    
-            
-
-
-
-#============================================================================================================
-#La útlima instrucción de la raíz, ejecutará todo lo que esté arriba de este método
-root.mainloop()
-#============================================================================================================
+            '''
+''''''
