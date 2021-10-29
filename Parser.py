@@ -103,6 +103,7 @@ class Parser:
             return Instruction_Instruction(instruction)
 
 
+
     #====================================================================================================
     #====================================================================================================
     #====================================================================================================
@@ -202,6 +203,12 @@ class Parser:
             print(self.tokens_list[self.i].type)
             lexem=self.tokens_list[self.i].lexem
             expression= Literal_Expression("int_parameter",lexem)
+            self.i+= 1
+            return expression
+        elif self.tokens_list[self.i].type == 'float_parameter' :
+            print(self.tokens_list[self.i].type)
+            lexem=self.tokens_list[self.i].lexem
+            expression= Literal_Expression("float_parameter",lexem)
             self.i+= 1
             return expression
         elif self.tokens_list[self.i].type == 'message' :

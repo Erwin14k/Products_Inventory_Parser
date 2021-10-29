@@ -481,7 +481,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    #token_handler.new_token(buffer,"simple_comment",line,column)
+                    token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -496,7 +496,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    #token_handler.new_token(buffer,"simple_comment",line,column)
+                    token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -511,7 +511,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    #token_handler.new_token(buffer,"simple_comment",line,column)
+                    token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -533,7 +533,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    #token_handler.new_token(buffer,"multiple_comment",line,column)
+                    token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -557,7 +557,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    #token_handler.new_token(buffer,"multiple_comment",line,column)
+                    token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -573,7 +573,7 @@ class Lexical_Analyzer:
                     buffer += c
                     column += 1
                 else:
-                    #token_handler.new_token(buffer,"simple_comment",line,column)
+                    token_handler.new_token(buffer,"simple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -598,7 +598,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    #token_handler.new_token(buffer,"multiple_comment",line,column)
+                    token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -620,7 +620,7 @@ class Lexical_Analyzer:
                                 column=1
                                 line+=1
                 else:
-                    #token_handler.new_token(buffer,"multiple_comment",line,column)
+                    token_handler.new_token(buffer,"multiple_comment",line,column)
                     buffer=""
                     column=1
                     line+=1
@@ -1356,7 +1356,7 @@ class Lexical_Analyzer:
                     count_if_buffer+=c
                     instruction_handler.new_instruction(count_if_buffer)
                     count_if_buffer=""
-                    state=33
+                    state=0
                 else:
                     error_handler.new_error('Caracter ' + buffer + ' no reconocido en el lenguaje.'
                     , 'Léxico', line, column)
@@ -1383,7 +1383,7 @@ class Lexical_Analyzer:
                         count_if_buffer+=c
                         instruction_handler.new_instruction(count_if_buffer)
                         count_if_buffer=""
-                        state=33
+                        state=0
             #=======================================================================================
             i += 1
 #========================================================================================================

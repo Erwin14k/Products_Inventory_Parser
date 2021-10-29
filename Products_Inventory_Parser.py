@@ -9,6 +9,7 @@ import webbrowser as wb
 from Lexical_Analyzer import Lexical_Analyzer
 from Lexical_Analyzer import token_handler,error_handler,register_handler,instruction_handler
 from Parser import Parser
+from Token import Token
 report_text=""
 parser_handler=Parser()
 lexical_analyzer_handler=Lexical_Analyzer()
@@ -163,7 +164,11 @@ upload_Button.config(command=upload_file)
 def analyze_file():
     global editable_text,console_text
     lexical_analyzer_handler.lexical_analyze_file(editable_text.get("1.0",'end-1c'))
-    parser_handler.analyze(token_handler.tokens_list)
+    list=[]
+    for token in token_handler.tokens_list:
+        if token.type !="simple_comment" and token.type!="multiple_comment":
+            list=[*list,token]
+    parser_handler.analyze(list)
     console_text.configure(state='normal')
     console_text.insert("end-1c",register_handler.report_console)
     console_text.configure(state='disabled')
